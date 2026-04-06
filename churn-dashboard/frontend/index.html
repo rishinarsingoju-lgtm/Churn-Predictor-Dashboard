@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Churn Prediction Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Customer Retention</p>
+        <h1>Churn Prediction Dashboard</h1>
+        <p class="hero-copy">Track dormant buyers, prioritize outreach, and keep the most valuable customers active.</p>
+      </div>
+      <div class="top-actions">
+        <button id="exportCsvBtn" class="btn btn-secondary">Export CSV</button>
+      </div>
+    </header>
+
+    <section class="summary-cards" id="summaryCards">
+      <article class="card">
+        <p>Total Customers</p>
+        <strong id="totalCustomers">0</strong>
+      </article>
+      <article class="card">
+        <p>High Risk</p>
+        <strong id="highRiskCount">0</strong>
+      </article>
+      <article class="card">
+        <p>Contacted This Week</p>
+        <strong id="contactedCount">0</strong>
+      </article>
+    </section>
+
+    <section class="controls">
+      <div class="search-field">
+        <label for="searchInput">Search customers</label>
+        <input id="searchInput" type="search" placeholder="Name or email" />
+      </div>
+      <div class="filter-panel">
+        <label for="riskFilter">Filter by risk</label>
+        <div class="custom-dropdown">
+          <button class="dropdown-trigger" id="riskFilter" aria-haspopup="listbox" aria-expanded="false">All</button>
+          <div class="dropdown-menu" role="listbox">
+            <div class="dropdown-item" data-value="All" role="option" aria-selected="true">All</div>
+            <div class="dropdown-item" data-value="High" role="option">High Risk</div>
+            <div class="dropdown-item" data-value="Medium" role="option">Medium Risk</div>
+            <div class="dropdown-item" data-value="Low" role="option">Low Risk</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Last Purchase</th>
+            <th>Days Inactive</th>
+            <th>Risk Level</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="customerTable"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
