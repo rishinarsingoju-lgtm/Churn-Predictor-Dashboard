@@ -1,76 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Churn Prediction Dashboard</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <meta charset="UTF-8">
+  <title>Customer Churn & Retention Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css?v=4">
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">Customer Retention</p>
-        <h1>Churn Prediction Dashboard</h1>
-        <p class="hero-copy">Track dormant buyers, prioritize outreach, and keep the most valuable customers active.</p>
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>Churn Prediction Dashboard</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="upload-wrapper" style="display: inline-block;">
+        <label for="csvUploadInput" class="btn btn-secondary">Upload CSV</label>
+        <input type="file" id="csvUploadInput" accept=".csv" style="display: none;">
       </div>
-      <div class="top-actions">
-        <button id="exportCsvBtn" class="btn btn-secondary">Export CSV</button>
-      </div>
-    </header>
-
-    <section class="summary-cards" id="summaryCards">
-      <article class="card">
-        <p>Total Customers</p>
-        <strong id="totalCustomers">0</strong>
-      </article>
-      <article class="card">
-        <p>High Risk</p>
-        <strong id="highRiskCount">0</strong>
-      </article>
-      <article class="card">
-        <p>Contacted This Week</p>
-        <strong id="contactedCount">0</strong>
-      </article>
-    </section>
-
-    <section class="controls">
-      <div class="search-field">
-        <label for="searchInput">Search customers</label>
-        <input id="searchInput" type="search" placeholder="Name or email" />
-      </div>
-      <div class="filter-panel">
-        <label for="riskFilter">Filter by risk</label>
-        <div class="custom-dropdown">
-          <button class="dropdown-trigger" id="riskFilter" aria-haspopup="listbox" aria-expanded="false">All</button>
-          <div class="dropdown-menu" role="listbox">
-            <div class="dropdown-item" data-value="All" role="option" aria-selected="true">All</div>
-            <div class="dropdown-item" data-value="High" role="option">High Risk</div>
-            <div class="dropdown-item" data-value="Medium" role="option">Medium Risk</div>
-            <div class="dropdown-item" data-value="Low" role="option">Low Risk</div>
-          </div>
+      <div class="dropdown">
+        <button class="btn btn-primary" id="exportBtn">Export ▼</button>
+        <div class="dropdown-content" id="exportDropdown">
+          <a href="#" data-export="current">Export Current View</a>
+          <a href="#" data-export="high">Export High Risk Only</a>
+          <a href="#" data-export="high_medium">Export High + Medium Risk</a>
+          <a href="#" data-export="all">Export All Customers</a>
         </div>
       </div>
-    </section>
+      <button id="toggleLogBtn" class="btn btn-secondary">View Action Log</button>
+    </div>
+  </header>
 
-    <section class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Last Purchase</th>
-            <th>Days Inactive</th>
-            <th>Risk Level</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="customerTable"></tbody>
-      </table>
-    </section>
+  <main class="app-container">
+    <div class="metric-cards">
+      <div class="card">
+        <h3>Total Customers</h3>
+        <p id="metricTotal">0</p>
+      </div>
+      <div class="card">
+        <h3>High Risk</h3>
+        <p id="metricHighRisk">0</p>
+      </div>
+      <div class="card">
+        <h3>Contacted This Week</h3>
+        <p id="metricContacted">0</p>
+      </div>
+      <div class="card">
+        <h3>Recovered</h3>
+        <p id="metricRecovered">0</p>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Risk:</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" value="High" class="risk-cb"> High</label>
+          <label><input type="checkbox" value="Medium" class="risk-cb"> Medium</label>
+          <label><input type="checkbox" value="Low" class="risk-cb"> Low</label>
+          <label><input type="checkbox" value="Safe" class="risk-cb"> Safe</label>
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <label>Segment:</label>
+        <select id="segmentFilter">
+          <option value="all">All</option>
+          <option value="High Spender">High Spender</option>
+          <option value="Loyal">Loyal</option>
+          <option value="Regular">Regular</option>
+          <option value="One-time">One-time</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Min Days:</label>
+        <input type="number" id="minDays" placeholder="e.g. 30">
+      </div>
+      <div class="filter-group">
+        <label>Max Days:</label>
+        <input type="number" id="maxDays" placeholder="e.g. 90">
+      </div>
+
+      <div class="filter-group">
+        <label>Sort By:</label>
+        <select id="sortBy">
+          <option value="days_inactive">Days Inactive</option>
+          <option value="total_spent">Total Spent</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Order:</label>
+        <select id="sortOrder">
+          <option value="desc">Descending</option>
+          <option value="asc">Ascending</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button id="applyFiltersBtn" class="btn btn-primary">Apply Filters</button>
+        <button id="clearFiltersBtn" class="btn btn-secondary">Clear</button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="selectAllCb"></th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Segment</th>
+          <th>Days Inactive</th>
+          <th>Risk Level</th>
+          <th>Suggested Action</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Rows rendered via JS -->
+      </tbody>
+    </table>
+    </div>
+  </main>
+
+  <div id="bulkActionBar" class="bulk-action-bar hidden">
+    <span id="bulkActionText">0 customers selected</span>
+    <button id="bulkActionBtn" class="btn btn-primary">Send Offer to Selected</button>
   </div>
 
+  <div id="actionLogPanel" class="action-log-panel">
+    <div class="action-log-header">
+      <h2>Action Log</h2>
+      <button id="closeLogBtn" class="close-btn">&times;</button>
+    </div>
+    <div class="action-log-content" id="actionLogContent">
+      <!-- Actions rendered here -->
+    </div>
+  </div>
+  
+  <div id="actionLogOverlay" class="action-log-overlay"></div>
+
   <div id="toast" class="toast hidden"></div>
-  <script src="/static/app.js"></script>
+
+  <script src="/static/app.js?v=4"></script>
 </body>
 </html>
