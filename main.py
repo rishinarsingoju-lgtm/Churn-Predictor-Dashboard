@@ -65,14 +65,14 @@ def get_customers_data():
                 date_obj = datetime.fromisoformat(last_purchase_date)
             except:
                 date_obj = now
-            days_inactive = (now - date_obj).days
+            days_inactive = max(0, (now - date_obj).days)
             last_purchase_str = last_purchase_date[:10]  # Just YYYY-MM-DD
         else:
             try:
                 date_obj = datetime.fromisoformat(cust["created_at"])
             except:
                 date_obj = now
-            days_inactive = (now - date_obj).days
+            days_inactive = max(0, (now - date_obj).days)
             last_purchase_str = cust["created_at"][:10] if cust["created_at"] else "N/A"
 
         risk_level = rules.get_risk_level(days_inactive, order_count)

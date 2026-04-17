@@ -71,9 +71,9 @@ function renderTable(data) {
     
     let btnHtml = "";
     if (c.contacted) {
-       btnHtml = `<button class="btn btn-secondary" disabled>✓ Contacted</button>`;
+       btnHtml = `<button class="btn btn-ghost" disabled>✓ Contacted</button>`;
     } else {
-       btnHtml = `<button class="btn btn-secondary btn-action" data-id="${c.id}" data-name="${c.name.replace(/"/g, '&quot;')}">Take Action</button>`;
+       btnHtml = `<button class="btn btn-action" data-id="${c.id}" data-name="${c.name.replace(/"/g, '&quot;')}">Take Action</button>`;
     }
 
     const tr = document.createElement("tr");

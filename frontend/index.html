@@ -2,145 +2,260 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Customer Churn & Retention Dashboard</title>
-  <link rel="stylesheet" href="/static/style.css?v=4">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Customer Churn Prediction & Retention Dashboard — monitor risk, take action, and recover customers.">
+  <title>Churn Predictor — Customer Retention Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css?v=11">
 </head>
 <body>
-  <header class="topbar">
+
+  <!-- ─── Ambient background blobs ─── -->
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- ─── Top Navigation Bar ─── -->
+  <header class="topbar" id="topbar">
     <div class="topbar-left">
-      <h1>Churn Prediction Dashboard</h1>
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <h1>Churn Predictor</h1>
+      </div>
     </div>
     <div class="topbar-right">
-      <div class="upload-wrapper" style="display: inline-block;">
-        <label for="csvUploadInput" class="btn btn-secondary">Upload CSV</label>
-        <input type="file" id="csvUploadInput" accept=".csv" style="display: none;">
-      </div>
-      <div class="dropdown">
-        <button class="btn btn-primary" id="exportBtn">Export ▼</button>
+      <label for="csvUploadInput" class="btn btn-ghost" id="uploadCsvLabel">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        Upload CSV
+      </label>
+      <input type="file" id="csvUploadInput" accept=".csv" hidden>
+
+      <div class="dropdown" id="exportDropdownWrapper">
+        <button class="btn btn-ghost" id="exportBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
         <div class="dropdown-content" id="exportDropdown">
-          <a href="#" data-export="current">Export Current View</a>
-          <a href="#" data-export="high">Export High Risk Only</a>
-          <a href="#" data-export="high_medium">Export High + Medium Risk</a>
-          <a href="#" data-export="all">Export All Customers</a>
+          <a href="#" data-export="current">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+            Current View
+          </a>
+          <a href="#" data-export="high">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            High Risk Only
+          </a>
+          <a href="#" data-export="high_medium">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            High + Medium Risk
+          </a>
+          <a href="#" data-export="all">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            All Customers
+          </a>
         </div>
       </div>
-      <button id="toggleLogBtn" class="btn btn-secondary">View Action Log</button>
+
+      <button id="toggleLogBtn" class="btn btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Action Log
+      </button>
     </div>
   </header>
 
-  <main class="app-container">
-    <div class="metric-cards">
-      <div class="card">
-        <h3>Total Customers</h3>
-        <p id="metricTotal">0</p>
-      </div>
-      <div class="card">
-        <h3>High Risk</h3>
-        <p id="metricHighRisk">0</p>
-      </div>
-      <div class="card">
-        <h3>Contacted This Week</h3>
-        <p id="metricContacted">0</p>
-      </div>
-      <div class="card">
-        <h3>Recovered</h3>
-        <p id="metricRecovered">0</p>
-      </div>
-    </div>
+  <!-- ─── Main Dashboard Content ─── -->
+  <main class="dashboard">
 
-    <div class="filter-bar">
-      <div class="filter-group">
-        <label>Risk:</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" value="High" class="risk-cb"> High</label>
-          <label><input type="checkbox" value="Medium" class="risk-cb"> Medium</label>
-          <label><input type="checkbox" value="Low" class="risk-cb"> Low</label>
-          <label><input type="checkbox" value="Safe" class="risk-cb"> Safe</label>
+    <!-- Metric Cards -->
+    <section class="metrics" id="metricsSection">
+      <div class="metric-card" data-accent="blue">
+        <div class="metric-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="metric-card-body">
+          <span class="metric-label">Total Customers</span>
+          <span class="metric-value" id="metricTotal">0</span>
         </div>
       </div>
-      
-      <div class="filter-group">
-        <label>Segment:</label>
-        <select id="segmentFilter">
-          <option value="all">All</option>
-          <option value="High Spender">High Spender</option>
-          <option value="Loyal">Loyal</option>
-          <option value="Regular">Regular</option>
-          <option value="One-time">One-time</option>
-        </select>
+      <div class="metric-card" data-accent="red">
+        <div class="metric-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="metric-card-body">
+          <span class="metric-label">High Risk</span>
+          <span class="metric-value" id="metricHighRisk">0</span>
+        </div>
       </div>
+      <div class="metric-card" data-accent="green">
+        <div class="metric-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="metric-card-body">
+          <span class="metric-label">Contacted This Week</span>
+          <span class="metric-value" id="metricContacted">0</span>
+        </div>
+      </div>
+      <div class="metric-card" data-accent="purple">
+        <div class="metric-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <div class="metric-card-body">
+          <span class="metric-label">Recovered</span>
+          <span class="metric-value" id="metricRecovered">0</span>
+        </div>
+      </div>
+    </section>
 
-      <div class="filter-group">
-        <label>Min Days:</label>
-        <input type="number" id="minDays" placeholder="e.g. 30">
+    <!-- Filter Bar -->
+    <section class="filter-panel" id="filterPanel">
+      <div class="filter-panel-header">
+        <h2>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filters
+        </h2>
       </div>
-      <div class="filter-group">
-        <label>Max Days:</label>
-        <input type="number" id="maxDays" placeholder="e.g. 90">
-      </div>
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label class="filter-label">Risk Level</label>
+          <div class="chip-group">
+            <label class="chip"><input type="checkbox" value="High" class="risk-cb"><span class="chip-dot high"></span> High</label>
+            <label class="chip"><input type="checkbox" value="Medium" class="risk-cb"><span class="chip-dot medium"></span> Medium</label>
+            <label class="chip"><input type="checkbox" value="Low" class="risk-cb"><span class="chip-dot low"></span> Low</label>
+            <label class="chip"><input type="checkbox" value="Safe" class="risk-cb"><span class="chip-dot safe"></span> Safe</label>
+          </div>
+        </div>
 
-      <div class="filter-group">
-        <label>Sort By:</label>
-        <select id="sortBy">
-          <option value="days_inactive">Days Inactive</option>
-          <option value="total_spent">Total Spent</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label>Order:</label>
-        <select id="sortOrder">
-          <option value="desc">Descending</option>
-          <option value="asc">Ascending</option>
-        </select>
+        <div class="filter-group">
+          <label class="filter-label" for="segmentFilter">Segment</label>
+          <select id="segmentFilter" class="select-input">
+            <option value="all">All Segments</option>
+            <option value="High Spender">High Spender</option>
+            <option value="Loyal">Loyal</option>
+            <option value="Regular">Regular</option>
+            <option value="One-time">One-time</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="minDays">Min Days Inactive</label>
+          <input type="number" id="minDays" class="text-input" placeholder="e.g. 30">
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="maxDays">Max Days Inactive</label>
+          <input type="number" id="maxDays" class="text-input" placeholder="e.g. 90">
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="sortBy">Sort By</label>
+          <select id="sortBy" class="select-input">
+            <option value="days_inactive">Days Inactive</option>
+            <option value="total_spent">Total Spent</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="sortOrder">Order</label>
+          <select id="sortOrder" class="select-input">
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </select>
+        </div>
       </div>
 
       <div class="filter-actions">
-        <button id="applyFiltersBtn" class="btn btn-primary">Apply Filters</button>
-        <button id="clearFiltersBtn" class="btn btn-secondary">Clear</button>
+        <button id="applyFiltersBtn" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Apply Filters
+        </button>
+        <button id="clearFiltersBtn" class="btn btn-ghost">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Clear
+        </button>
       </div>
-    </div>
+    </section>
 
-    <div class="table-wrapper">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th><input type="checkbox" id="selectAllCb"></th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Segment</th>
-          <th>Days Inactive</th>
-          <th>Risk Level</th>
-          <th>Suggested Action</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-        <!-- Rows rendered via JS -->
-      </tbody>
-    </table>
-    </div>
+    <!-- Data Table -->
+    <section class="table-section">
+      <div class="table-wrapper" id="tableWrapper">
+        <table class="data-table" id="customerTable">
+          <thead>
+            <tr>
+              <th class="th-check"><input type="checkbox" id="selectAllCb"></th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Segment</th>
+              <th>Days Inactive</th>
+              <th>Risk Level</th>
+              <th>Suggested Action</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Rows rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
   </main>
 
-  <div id="bulkActionBar" class="bulk-action-bar hidden">
-    <span id="bulkActionText">0 customers selected</span>
-    <button id="bulkActionBtn" class="btn btn-primary">Send Offer to Selected</button>
+  <!-- ─── Bulk Action Bar ─── -->
+  <div id="bulkActionBar" class="bulk-bar hidden">
+    <div class="bulk-bar-inner">
+      <span id="bulkActionText" class="bulk-bar-text">0 customers selected</span>
+      <button id="bulkActionBtn" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        Send Offer to Selected
+      </button>
+    </div>
   </div>
 
-  <div id="actionLogPanel" class="action-log-panel">
-    <div class="action-log-header">
-      <h2>Action Log</h2>
-      <button id="closeLogBtn" class="close-btn">&times;</button>
+  <!-- ─── Action Log Side Panel ─── -->
+  <div id="actionLogOverlay" class="overlay"></div>
+  <aside id="actionLogPanel" class="side-panel">
+    <div class="side-panel-header">
+      <h2>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Action Log
+      </h2>
+      <button id="closeLogBtn" class="btn-icon" aria-label="Close action log">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
-    <div class="action-log-content" id="actionLogContent">
+    <div class="side-panel-content" id="actionLogContent">
       <!-- Actions rendered here -->
     </div>
-  </div>
-  
-  <div id="actionLogOverlay" class="action-log-overlay"></div>
+  </aside>
 
+  <!-- ─── Toast Notification ─── -->
   <div id="toast" class="toast hidden"></div>
 
-  <script src="/static/app.js?v=4"></script>
+  <script src="/static/app.js?v=10"></script>
 </body>
 </html>
